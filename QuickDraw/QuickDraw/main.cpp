@@ -6,7 +6,8 @@ int main() {
 	auto app = new QuickDrawApp();
 
 	// initialise and loop
-	app->run("AIE", 1280, 720, false);
+	app->run("AIE", 800, 600, false);
+	
 
 	// deallocation
 	delete app;

@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "Renderer2D.h"
 #include <string>
+#include <Texture.h>
 
 using namespace std;
 
@@ -21,9 +22,16 @@ public:
 protected:
 
 	aie::Renderer2D*	m_2dRenderer;
-	aie::Texture*		m_texture;
-	aie::Texture*		m_shipTexture;
+	aie::Texture*		m_BG;
+	aie::Texture*		m_Enemy;
+	aie::Texture*		m_Building_Left;
+	aie::Texture*		m_Player_Gun;
+	aie::Texture*		m_Player;
+	aie::Texture*		m_Player_Hat;
+	aie::Texture*		m_Border;
+	aie::Texture*		m_Title;
 	aie::Font*			m_font;
+	aie::Font*			m_font_rope;
 	
 	float m_cameraX, m_cameraY;
 	//float m_timer;
