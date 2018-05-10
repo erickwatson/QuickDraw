@@ -24,6 +24,7 @@ bool QuickDrawApp::startup() {
 	// the following path would be used instead: "./font/consolas.ttf"
 	m_font = new aie::Font("./font/consolas.ttf", 80);
 	m_font_rope = new aie::Font("./font/Rope_MF.ttf", 80);
+	
 	//
 	m_cameraX = 0;
 	m_cameraY = 0;
@@ -35,7 +36,8 @@ bool QuickDrawApp::startup() {
 	// Load in Textures
 
 	// Background
-	m_BG = new aie::Texture("../images/Quickdraw_BG.jpg");
+	m_BG_Dark = new aie::Texture("../images/Quickdraw_BG_Dark.png");
+	m_BG_Sunset = new aie::Texture("../images/Quickdraw_BG_Sunset.png");
 
 	// Enemy First State
 	m_Enemy_Body = new aie::Texture("../images/Quickdraw_Enemy_Body.png");
@@ -53,6 +55,7 @@ bool QuickDrawApp::startup() {
 	
 	// Extra stuff
 	m_Building_Left = new aie::Texture("../images/Quickdraw_Building_Left.png");
+	m_Game_Menu_Selection = new aie::Texture("../images/Quickdraw_Menu_Selection.png");
 
 	// Player First State
 	m_Player_Gun = new aie::Texture("../images/Quickdraw_Player_Gun.png");
@@ -62,6 +65,8 @@ bool QuickDrawApp::startup() {
 
 	//Titles
 	m_Border = new aie::Texture("../images/Quickdraw_Border.png");
+	m_Game_Menu = new aie::Texture("../images/Quickdraw_Game_Menu.png");
+	m_Instructions = new aie::Texture("../images/Quickdraw_Game_Instructions.png");
 	m_Title = new aie::Texture("../images/Quickdraw_Title.png");
 	m_Flash = new aie::Texture("../images/Quickdraw_Flash.png");
 	m_Game_Ready = new aie::Texture("../images/Quickdraw_Game_Ready.png");
@@ -98,12 +103,58 @@ void QuickDrawApp::update(float deltaTime) {
 		{
 			m_drawTimer = 0;
 			m_waitTimer = -1;
-			m_gameState = Ready;
+			m_bgState = BGState::Off;
+			m_playerState = CharacterState::Null;
+			m_enemyState = CharacterState::Null;
+			m_Selection = Play;
+			m_gameState = Menu;
+			break;
+		}
+		case Menu:
+		{
+		
+			// Trying to make a menu
+			if (input->wasKeyPressed(aie::INPUT_KEY_F1))
+			{
+				m_gameState = Instructions;
+
+			}
+			else if (input->wasKeyPressed(aie::INPUT_KEY_DOWN))
+			{
+				m_Selection = Instructions;
+
+			}
+			else if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
+			{
+				m_gameState = Ready;
+
+			}
+			break;
+		}
+		case Play:
+		{
+			if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
+			{
+				m_gameState = Ready;
+
+			}
+			break;
+		}
+		case Instructions:
+		{
+			m_Selection = GameState::Clear;
+			if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
+			{
+				m_gameState = Menu;
+
+			}
 			break;
 		}
 		case Ready:
 		{
 			int i;
+			m_Selection = GameState::Clear;
+			m_bgState = BGState::On;
 			m_playerState = CharacterState::Idle;
 			m_enemyState = CharacterState::Idle;
 
@@ -114,14 +165,25 @@ void QuickDrawApp::update(float deltaTime) {
 
 			}
 
-			if (m_waitTimer > 0)
+			if (m_waitTimer > 0 && !input->wasKeyPressed(aie::INPUT_KEY_SPACE))
 			{
 				m_waitTimer -= deltaTime;
+
 
 				if (m_waitTimer <= 0)
 				{
 					m_gameState = Draw;
 				}
+				// Trying to check if player prematurely pressed Space
+				/*else if (input->wasKeyPressed(aie::INPUT_KEY_SPACE))
+				{
+
+					m_gameState = Lose;
+
+					break;
+				}*/
+
+
 			}
 
 
@@ -144,6 +206,7 @@ void QuickDrawApp::update(float deltaTime) {
 
 				break;
 			}
+
 			else if (m_drawTimer > 1)
 			{
 				m_gameState = Lose;
@@ -154,6 +217,14 @@ void QuickDrawApp::update(float deltaTime) {
 			break;
 		}
 		case Win:
+		{
+			if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
+			{
+				m_gameState = Restart;
+
+			}
+			break;
+		}
 		case Lose :
 		{
 			if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
@@ -162,6 +233,10 @@ void QuickDrawApp::update(float deltaTime) {
 				
 			}
 			break;
+		}
+		case Exit:
+		{
+			quit();
 		}
 
 	}
@@ -185,8 +260,43 @@ void QuickDrawApp::draw() {
 	m_2dRenderer->drawSprite(m_Border, 400, 300, 0, 0, 0,				2);
 	//m_2dRenderer->drawSprite(m_Flash, 400, 300, 0, 0, 0,				3);
 
+	switch (m_bgState)
+	{
+	case On:
+		m_2dRenderer->drawSprite(m_Building_Left, 400, 300, 0, 0, 0, 11);
+		m_2dRenderer->drawSprite(m_BG_Sunset, 400, 300, 0, 0, 0, 20);
+		break;
+	case Off:
+
+		break;
+	}
+
+	switch (m_Selection)
+	{
+	case Clear:
+		break;
+	case Play:
+		m_2dRenderer->drawSprite(m_Game_Menu_Selection, 200, 350, 0, 0, 0, 5);
+		break;
+	case Instructions:
+		m_2dRenderer->drawSprite(m_Game_Menu_Selection, 200, 300, 0, 0, 0, 5);
+		break;
+	case Exit:
+		m_2dRenderer->drawSprite(m_Game_Menu_Selection, 200, 250, 0, 0, 0, 5);
+		break;
+	}
+
 	//Titles
 	switch (m_gameState) {
+	case Menu:
+		m_2dRenderer->drawSprite(m_Game_Menu, 400, 300, 0, 0, 0, 5);
+		
+		break;
+	case Play:
+
+	case Instructions:
+		m_2dRenderer->drawSprite(m_Instructions, 400, 300, 0, 0, 0, 5);
+		break;
 	case Ready:
 		m_2dRenderer->drawSprite(m_Game_Ready, 400, 300, 0, 0, 0, 5);
 		break;
@@ -199,28 +309,37 @@ void QuickDrawApp::draw() {
 	case Lose:
 		m_2dRenderer->drawSprite(m_Game_Lose, 400, 300, 0, 0, 0, 7);
 		break;
+	case Exit:
+		break;
 	}
 
 	//Player
-	m_2dRenderer->drawSprite(m_Player, 400, 300, 0, 0, 0,				9);
+	
 	switch (m_playerState) {
+	case Null:
+		break;
 	case Dead:
+		m_2dRenderer->drawSprite(m_Player, 400, 300, 0, 0, 0, 9);
 		m_2dRenderer->drawSprite(m_Player_Hat_Dead, 400, 300, 0, 0, 0, 7);
 		break;
 	case Idle:
+		m_2dRenderer->drawSprite(m_Player, 400, 300, 0, 0, 0, 9);
 		m_2dRenderer->drawSprite(m_Player_Hat, 400, 300, 0, 0, 0, 8);
 		break;
 	case Shooting:
+		m_2dRenderer->drawSprite(m_Player, 400, 300, 0, 0, 0, 9);
 		m_2dRenderer->drawSprite(m_Player_Hat, 400, 300, 0, 0, 0, 8);
 		m_2dRenderer->drawSprite(m_Player_Gun, 400, 300, 0, 0, 0, 10);
 		break;
 	}
 
 	//Extra
-	m_2dRenderer->drawSprite(m_Building_Left, 400, 300, 0, 0, 0,		11);
+	
 	
 	//Enemy
 	switch (m_playerState) {
+	case Null:
+		break;
 	case Dead:
 		m_2dRenderer->drawSprite(m_Enemy_Hat_Dead, 400, 300, 0, 0, 0, 12);
 		m_2dRenderer->drawSprite(m_Enemy_Body_Draw, 400, 300, 0, 0, 0, 14);
@@ -241,7 +360,7 @@ void QuickDrawApp::draw() {
 	}
 
 	//Background
-	m_2dRenderer->drawSprite(m_BG, 400, 300, 0, 0, 0,					20);
+	m_2dRenderer->drawSprite(m_BG_Dark, 400, 300, 0, 0, 0,					21);
 
 	// draw your stuff here! m_font;
 	char fps[32];

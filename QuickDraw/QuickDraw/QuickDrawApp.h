@@ -24,8 +24,9 @@ protected:
 	aie::Renderer2D*	m_2dRenderer;
 
 	// Textures
-	//BackGround
-	aie::Texture*		m_BG;
+	//BackGrounds
+	aie::Texture*		m_BG_Dark;
+	aie::Texture*		m_BG_Sunset;
 
 	//Enemy
 	aie::Texture*		m_Enemy_Body;
@@ -39,6 +40,7 @@ protected:
 
 	//Extras
 	aie::Texture*		m_Building_Left;
+	aie::Texture*		m_Game_Menu_Selection;
 
 	//Player
 	aie::Texture*		m_Player_Gun;
@@ -49,11 +51,15 @@ protected:
 	//Titles
 	aie::Texture*		m_Border;
 	aie::Texture*		m_Title;
+	aie::Texture*		m_Game_Menu;
+	aie::Texture*		m_Instructions;
 	aie::Texture*		m_Flash;
 	aie::Texture*		m_Game_Ready;
 	aie::Texture*		m_Game_Draw;
 	aie::Texture*		m_Game_Win;
 	aie::Texture*		m_Game_Lose;
+
+	//Fonts
 	aie::Font*			m_font;
 	aie::Font*			m_font_rope;
 	
@@ -74,6 +80,7 @@ protected:
 
 	enum CharacterState
 	{
+		Null,
 		Idle,
 		Shooting,
 		Dead,
@@ -86,14 +93,27 @@ protected:
 	float m_waitTimer;
 	float m_deathTimer;
 
+	enum BGState
+	{
+		On,
+		Off,
+	};
+	BGState m_bgState;
+
 	enum GameState
 	{
+		Clear,
+		Menu,
+		Play,
+		Instructions,
+		Exit,
 		Draw,
 		Ready,
 		Win,
 		Lose,
+		Jumped,
 		Restart,
 	};
-
+	GameState m_Selection;
 	GameState m_gameState;
 };
