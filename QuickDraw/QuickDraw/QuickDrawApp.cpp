@@ -107,10 +107,10 @@ void QuickDrawApp::update(float deltaTime) {
 			m_playerState = CharacterState::Null;
 			m_enemyState = CharacterState::Null;
 			m_Selection = Play;
-			m_gameState = Menu;
+			m_gameState = Menu1;
 			break;
 		}
-		case Menu:
+		case Menu1:
 		{
 		
 			// Trying to make a menu
@@ -122,11 +122,64 @@ void QuickDrawApp::update(float deltaTime) {
 			else if (input->wasKeyPressed(aie::INPUT_KEY_DOWN))
 			{
 				m_Selection = Instructions;
+				m_gameState = Menu2;
 
 			}
 			else if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
 			{
 				m_gameState = Ready;
+
+			}
+			else if (input->wasKeyPressed(aie::INPUT_KEY_UP))
+			{
+				m_Selection = Exit;
+				m_gameState = Menu3;
+
+			}
+			break;
+		}
+		case Menu2:
+		{
+
+			// Trying to make a menu
+			if (input->wasKeyPressed(aie::INPUT_KEY_DOWN))
+			{
+				m_Selection = Exit;
+				m_gameState = Menu3;
+
+			}
+			else if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
+			{
+				m_gameState = Instructions;
+
+			}
+			else if (input->wasKeyPressed(aie::INPUT_KEY_UP))
+			{
+				m_gameState = Menu1;
+				m_Selection = Play;
+
+			}
+			break;
+		}
+		case Menu3:
+		{
+
+			// Trying to make a menu
+			if (input->wasKeyPressed(aie::INPUT_KEY_DOWN))
+			{
+				m_Selection = Play;
+				m_gameState = Menu1;
+
+			}
+			else if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
+			{
+				m_gameState = Exit;
+
+			}
+			else if (input->wasKeyPressed(aie::INPUT_KEY_UP))
+			{
+				m_gameState = Menu2;
+				m_Selection = Instructions;
 
 			}
 			break;
@@ -145,8 +198,8 @@ void QuickDrawApp::update(float deltaTime) {
 			m_Selection = GameState::Clear;
 			if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
 			{
-				m_gameState = Menu;
-
+				m_gameState = Menu1;
+				m_Selection = Play;
 			}
 			break;
 		}
@@ -158,15 +211,14 @@ void QuickDrawApp::update(float deltaTime) {
 			m_playerState = CharacterState::Idle;
 			m_enemyState = CharacterState::Idle;
 
-			if ((m_waitTimer < 0) && input->wasKeyPressed(aie::INPUT_KEY_SPACE))
-			{
-				m_waitTimer = rand() % 4 + 1;
-				cout << "Wait time: " << m_waitTimer << endl;
 
-			}
 
-			if (m_waitTimer > 0 && !input->wasKeyPressed(aie::INPUT_KEY_SPACE))
+			if (m_waitTimer > 0)
 			{
+				if (input->wasKeyPressed(aie::INPUT_KEY_SPACE))
+				{
+					m_gameState = Lose;
+				}
 				m_waitTimer -= deltaTime;
 
 
@@ -182,10 +234,18 @@ void QuickDrawApp::update(float deltaTime) {
 
 					break;
 				}*/
-
+				break;
 
 			}
+			if ((m_waitTimer < 0) && input->wasKeyPressed(aie::INPUT_KEY_SPACE))
+			{
+				m_waitTimer = rand() % 4 + 1;
+				m_enemyShoot = (rand() % 1000 * 0.05) / 1000 + 0.23;
+				// Between: 0.21 - 0.25
+				cout << "enemyshoot: " << m_enemyShoot << endl;
+				cout << "Wait time: " << m_waitTimer << endl;
 
+			}
 
 			break;
 		}
@@ -197,18 +257,21 @@ void QuickDrawApp::update(float deltaTime) {
 
 
 
-			if ((m_drawTimer < 1) && input->wasKeyPressed(aie::INPUT_KEY_SPACE))
+			if ((m_drawTimer < m_enemyShoot) && input->wasKeyPressed(aie::INPUT_KEY_SPACE))
 			{
 				// Checking if player drew first
 				// Change states to win/lose accordingly
+				m_flashState = On;
 				cout << "Reaction time: " << m_drawTimer << endl;
 				m_gameState = Win;
 
 				break;
 			}
 
-			else if (m_drawTimer > 1)
+			else if (m_drawTimer > m_enemyShoot)
 			{
+				m_flashState = On;
+				
 				m_gameState = Lose;
 
 				break;
@@ -218,6 +281,8 @@ void QuickDrawApp::update(float deltaTime) {
 		}
 		case Win:
 		{
+			m_flashState = Off;
+			m_enemyState = Dead;
 			if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
 			{
 				m_gameState = Restart;
@@ -227,6 +292,15 @@ void QuickDrawApp::update(float deltaTime) {
 		}
 		case Lose :
 		{
+			m_flashState = Off;
+			if (input->wasKeyPressed(aie::INPUT_KEY_SPACE))
+			{
+				//m_drawTimer += deltaTime;
+				cout << "Reaction time: " << m_drawTimer << endl;
+				break;
+			}
+
+			m_playerState = Dead;
 			if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
 			{
 				m_gameState = Restart;
@@ -258,7 +332,8 @@ void QuickDrawApp::draw() {
 	m_2dRenderer->begin();
 	m_2dRenderer->drawSprite(m_Title, 400, 300, 0, 0, 0,				1);
 	m_2dRenderer->drawSprite(m_Border, 400, 300, 0, 0, 0,				2);
-	//m_2dRenderer->drawSprite(m_Flash, 400, 300, 0, 0, 0,				3);
+	
+
 
 	switch (m_bgState)
 	{
@@ -271,6 +346,15 @@ void QuickDrawApp::draw() {
 		break;
 	}
 
+	switch (m_flashState)
+	{
+	case On:
+		m_2dRenderer->drawSprite(m_Flash, 400, 300, 0, 0, 0, 3);
+		break;
+	case Off:
+		break;
+	}
+
 	switch (m_Selection)
 	{
 	case Clear:
@@ -279,16 +363,18 @@ void QuickDrawApp::draw() {
 		m_2dRenderer->drawSprite(m_Game_Menu_Selection, 200, 350, 0, 0, 0, 5);
 		break;
 	case Instructions:
-		m_2dRenderer->drawSprite(m_Game_Menu_Selection, 200, 300, 0, 0, 0, 5);
+		m_2dRenderer->drawSprite(m_Game_Menu_Selection, 200, 290, 0, 0, 0, 5);
 		break;
 	case Exit:
-		m_2dRenderer->drawSprite(m_Game_Menu_Selection, 200, 250, 0, 0, 0, 5);
+		m_2dRenderer->drawSprite(m_Game_Menu_Selection, 200, 210, 0, 0, 0, 5);
 		break;
 	}
 
 	//Titles
 	switch (m_gameState) {
-	case Menu:
+	case Menu1:
+	case Menu2:
+	case Menu3:
 		m_2dRenderer->drawSprite(m_Game_Menu, 400, 300, 0, 0, 0, 5);
 		
 		break;
@@ -321,6 +407,7 @@ void QuickDrawApp::draw() {
 	case Dead:
 		m_2dRenderer->drawSprite(m_Player, 400, 300, 0, 0, 0, 9);
 		m_2dRenderer->drawSprite(m_Player_Hat_Dead, 400, 300, 0, 0, 0, 7);
+		m_2dRenderer->drawSprite(m_Player_Gun, 400, 300, 0, 0, 0, 10);
 		break;
 	case Idle:
 		m_2dRenderer->drawSprite(m_Player, 400, 300, 0, 0, 0, 9);
@@ -337,13 +424,14 @@ void QuickDrawApp::draw() {
 	
 	
 	//Enemy
-	switch (m_playerState) {
+	switch (m_enemyState) {
 	case Null:
 		break;
 	case Dead:
 		m_2dRenderer->drawSprite(m_Enemy_Hat_Dead, 400, 300, 0, 0, 0, 12);
 		m_2dRenderer->drawSprite(m_Enemy_Body_Draw, 400, 300, 0, 0, 0, 14);
 		m_2dRenderer->drawSprite(m_Enemy_Shadow_Hat_Dead, 400, 300, 0, 0, 0, 16);
+		m_2dRenderer->drawSprite(m_Enemy_Shadow_Draw, 400, 300, 0, 0, 0, 6);
 		break;
 	case Idle:
 		m_2dRenderer->drawSprite(m_Enemy_Hat, 400, 300, 0, 0, 0, 13);

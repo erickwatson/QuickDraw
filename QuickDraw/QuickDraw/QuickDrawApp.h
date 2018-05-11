@@ -76,6 +76,8 @@ protected:
 	const unsigned int timerMin = 2;
 	const unsigned int timerMax = 6;
 
+	float m_enemyShoot;
+
 	//int m_gameState; // Game States: Starting (Enter Name), Counting Down, "Fire" (Counting reaction time), Game Over (Win or Lose)
 
 	enum CharacterState
@@ -99,11 +101,14 @@ protected:
 		Off,
 	};
 	BGState m_bgState;
+	BGState m_flashState;
 
 	enum GameState
 	{
 		Clear,
-		Menu,
+		Menu1,
+		Menu2,
+		Menu3,
 		Play,
 		Instructions,
 		Exit,
