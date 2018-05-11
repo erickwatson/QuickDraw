@@ -54,10 +54,12 @@ protected:
 	aie::Texture*		m_Game_Menu;
 	aie::Texture*		m_Instructions;
 	aie::Texture*		m_Flash;
+	aie::Texture*		m_Game_SquareUp;
 	aie::Texture*		m_Game_Ready;
 	aie::Texture*		m_Game_Draw;
 	aie::Texture*		m_Game_Win;
 	aie::Texture*		m_Game_Lose;
+	aie::Texture*		m_Game_Enter_Instruction;
 
 	//Fonts
 	aie::Font*			m_font;
@@ -102,6 +104,7 @@ protected:
 	};
 	BGState m_bgState;
 	BGState m_flashState;
+	BGState m_enterToMenu;
 
 	enum GameState
 	{
@@ -113,6 +116,7 @@ protected:
 		Instructions,
 		Exit,
 		Draw,
+		SquareUp,
 		Ready,
 		Win,
 		Lose,
@@ -121,4 +125,5 @@ protected:
 	};
 	GameState m_Selection;
 	GameState m_gameState;
+	GameState m_readyState;
 };
