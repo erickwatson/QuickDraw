@@ -103,7 +103,9 @@ void QuickDrawApp::update(float deltaTime) {
 	{
 		case Restart:
 		{
+			m_flashState = Off;
 			m_drawTimer = 0;
+			m_drawTimer2 = 0;
 			m_waitTimer = -1;
 			m_bgState = BGState::Off;
 			m_playerState = CharacterState::Null;
@@ -136,6 +138,11 @@ void QuickDrawApp::update(float deltaTime) {
 			{
 				m_Selection = Exit;
 				m_gameState = Menu3;
+
+			}
+			else if (input->wasKeyPressed(aie::INPUT_KEY_F3))
+			{
+				m_gameState = SquareUp2;
 
 			}
 			break;
@@ -186,10 +193,7 @@ void QuickDrawApp::update(float deltaTime) {
 			}
 			break;
 		}
-		case Play:
-		{
 
-		}
 		case Instructions:
 		{
 			m_Selection = GameState::Clear;
@@ -226,6 +230,27 @@ void QuickDrawApp::update(float deltaTime) {
 			break;
 			break;
 		}
+		case SquareUp2:
+		{
+			m_Selection = GameState::Clear;
+			m_readyState = GameState::SquareUp;
+			m_bgState = BGState::On;
+			m_playerState = CharacterState::Idle;
+			m_enemyState = CharacterState::Idle;
+
+			if ((m_waitTimer < 0) && input->wasKeyPressed(aie::INPUT_KEY_SPACE))
+			{
+				m_waitTimer = rand() % 4 + 1;
+				//m_enemyShoot = (rand() % 1000 * 0.05) / 1000 + 0.23;
+				// Between: 0.21 - 0.25
+				//cout << "enemyshoot: " << m_enemyShoot << endl;
+				cout << "Wait time: " << m_waitTimer << endl;
+				m_gameState = Ready2;
+
+			}
+						
+			break;
+		}
 		case Ready:
 		{
 			int i;
@@ -259,6 +284,36 @@ void QuickDrawApp::update(float deltaTime) {
 
 			break;
 		}
+		case Ready2:
+		{
+			int i;
+			m_readyState = Ready;
+
+			if (m_waitTimer > 0)
+			{
+				if (input->wasKeyPressed(aie::INPUT_KEY_LEFT_CONTROL))
+				{
+					m_gameState = Win2;
+				}
+				else if (input->wasKeyPressed(aie::INPUT_KEY_RIGHT_CONTROL))
+				{
+					m_gameState = Win1;
+				}
+				m_waitTimer -= deltaTime;
+
+
+				if (m_waitTimer <= 0)
+				{
+					m_gameState = Draw2;
+				}
+
+				break;
+
+			}
+
+
+			break;
+		}
 		case Draw:
 		{
 			m_playerState = CharacterState::Idle;
@@ -274,6 +329,7 @@ void QuickDrawApp::update(float deltaTime) {
 				// Change states to win/lose accordingly
 				m_flashState = On;
 				cout << "Reaction time: " << m_drawTimer << endl;
+				m_enemyState = Dead;
 				m_gameState = Win;
 
 				break;
@@ -290,15 +346,97 @@ void QuickDrawApp::update(float deltaTime) {
 
 			break;
 		}
+		case Draw2:
+		{
+			m_playerState = CharacterState::Idle;
+			m_enemyState = CharacterState::Idle;
+			m_readyState = GameState::Clear;
+			m_drawTimer += deltaTime;
+			m_drawTimer2 += deltaTime;
+
+
+
+			if (input->wasKeyPressed(aie::INPUT_KEY_LEFT_CONTROL))
+			{
+				// Checking if player drew first
+				// Change states to win/lose accordingly
+				m_flashState = On;
+				cout << "Player 1 reaction: " << m_drawTimer << endl;
+				m_gameState = Win1;
+
+				break;
+			}
+			else if (input->wasKeyPressed(aie::INPUT_KEY_RIGHT_CONTROL))
+			{
+				// Checking if player drew first
+				// Change states to win/lose accordingly
+				m_flashState = On;
+				cout << "Player 2 reaction: " << m_drawTimer2 << endl;
+				m_gameState = Win2;
+
+				break;
+			}
+
+			//else if (m_drawTimer > m_enemyShoot)
+			//{
+			//	m_flashState = On;
+
+			//	m_gameState = Lose;
+
+			//	break;
+			//}
+
+			
+		}
 		case Win:
 		{
 			m_flashState = Off;
-			m_enemyState = Dead;
+			
 
 			if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
 			{
 				m_gameState = Restart;
 
+			}
+			break;
+		}
+		case Win1:
+		{
+			m_flashState = Off;
+			m_playerState = Dead;
+			m_drawTimer2 += deltaTime;
+			if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
+			{
+				m_gameState = Restart;
+
+			}
+
+	
+			else if (input->wasKeyPressed(aie::INPUT_KEY_RIGHT_CONTROL))
+			{
+				//m_drawTimer += deltaTime;
+				cout << "Player 2 reaction: " << m_drawTimer2 << endl;
+				m_gameState = Win;
+				break;
+
+			}
+			
+			break;
+		}
+		case Win2:
+		{
+			m_flashState = Off;
+			m_enemyState = Dead;
+			m_drawTimer += deltaTime;
+
+			if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
+			{
+				m_gameState = Restart;
+			}
+			else if (input->wasKeyPressed(aie::INPUT_KEY_LEFT_CONTROL))
+			{
+				cout << "Player 1 reaction: " << m_drawTimer << endl;
+				m_gameState = Win;
 			}
 			break;
 		}
@@ -312,7 +450,7 @@ void QuickDrawApp::update(float deltaTime) {
 				cout << "Reaction time: " << m_drawTimer << endl;
 				break;
 			}
-
+			
 			m_playerState = Dead;
 			if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
 			{
@@ -321,6 +459,7 @@ void QuickDrawApp::update(float deltaTime) {
 			}
 			break;
 		}
+
 		case Exit:
 		{
 			quit();
@@ -332,7 +471,7 @@ void QuickDrawApp::update(float deltaTime) {
 	//if (input->isKeyDown(aie::INPUT_KEY_SPACE))
 
 	// exit the application
-	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
+	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE) && input->isKeyDown(aie::INPUT_KEY_LEFT_SHIFT))
 		quit();
 }
 

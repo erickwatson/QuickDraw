@@ -94,6 +94,7 @@ protected:
 	CharacterState m_enemyState;
 
 	float m_drawTimer;
+	float m_drawTimer2;
 	float m_waitTimer;
 	float m_deathTimer;
 
@@ -112,13 +113,20 @@ protected:
 		Menu1,
 		Menu2,
 		Menu3,
+		Menu4,
 		Play,
+		Play2,
 		Instructions,
 		Exit,
 		Draw,
+		Draw2,
 		SquareUp,
+		SquareUp2,
 		Ready,
+		Ready2,
 		Win,
+		Win1,
+		Win2,
 		Lose,
 		Jumped,
 		Restart,
