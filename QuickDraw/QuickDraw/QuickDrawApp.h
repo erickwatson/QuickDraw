@@ -134,4 +134,8 @@ protected:
 	GameState m_Selection;
 	GameState m_gameState;
 	GameState m_readyState;
+
+	//Hi-Score
+
+
 };

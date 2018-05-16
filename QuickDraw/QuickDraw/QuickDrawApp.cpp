@@ -329,6 +329,7 @@ void QuickDrawApp::update(float deltaTime) {
 				// Change states to win/lose accordingly
 				m_flashState = On;
 				cout << "Reaction time: " << m_drawTimer << endl;
+
 				m_enemyState = Dead;
 				m_gameState = Win;
 
@@ -364,7 +365,7 @@ void QuickDrawApp::update(float deltaTime) {
 				cout << "Player 1 reaction: " << m_drawTimer << endl;
 				m_gameState = Win1;
 
-				break;
+				//break;
 			}
 			else if (input->wasKeyPressed(aie::INPUT_KEY_RIGHT_CONTROL))
 			{
@@ -374,7 +375,7 @@ void QuickDrawApp::update(float deltaTime) {
 				cout << "Player 2 reaction: " << m_drawTimer2 << endl;
 				m_gameState = Win2;
 
-				break;
+				//break;
 			}
 
 			//else if (m_drawTimer > m_enemyShoot)
@@ -386,7 +387,7 @@ void QuickDrawApp::update(float deltaTime) {
 			//	break;
 			//}
 
-			
+			break;
 		}
 		case Win:
 		{
