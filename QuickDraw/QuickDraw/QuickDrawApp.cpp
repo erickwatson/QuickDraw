@@ -22,8 +22,8 @@ bool QuickDrawApp::startup() {
 
 	// TODO: remember to change this when redistributing a build!
 	// the following path would be used instead: "./font/consolas.ttf"
-	m_font = new aie::Font("./font/consolas.ttf", 80);
-	m_font_rope = new aie::Font("./font/Rope_MF.ttf", 80);
+	m_font = new aie::Font("../fonts/consolas.ttf", 80);
+	m_font_rope = new aie::Font("../fonts/Rope_MF.ttf", 80);
 	
 	//
 	m_cameraX = 0;
@@ -65,7 +65,7 @@ bool QuickDrawApp::startup() {
 
 	//Titles
 	m_Border = new aie::Texture("../images/Quickdraw_Border.png");
-	m_Game_Menu = new aie::Texture("../images/Quickdraw_Game_Menu.png");
+	//m_Game_Menu = new aie::Texture("../images/Quickdraw_Game_Menu.png");
 	m_Instructions = new aie::Texture("../images/Quickdraw_Game_Instructions.png");
 	m_Title = new aie::Texture("../images/Quickdraw_Title.png");
 	m_Flash = new aie::Texture("../images/Quickdraw_Flash.png");
@@ -114,81 +114,39 @@ void QuickDrawApp::update(float deltaTime) {
 			m_gameState = Menu1;
 			break;
 		}
+
+
+
 		case Menu1:
+		case Menu2:
+		case Menu3:
 		{
 		
 			// Trying to make a menu
 			if (input->wasKeyPressed(aie::INPUT_KEY_F1))
 			{
 				m_gameState = Instructions;
-
 			}
 			else if (input->wasKeyPressed(aie::INPUT_KEY_DOWN))
 			{
-				m_Selection = Instructions;
-				m_gameState = Menu2;
-
+				// move on to the next item
+				currentMenuItem = (currentMenuItem + 1) % menuItems;
+				m_gameState = menu[currentMenuItem].state;
 			}
 			else if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
 			{
-				m_gameState = SquareUp;
+				m_gameState = menu[currentMenuItem].nextState;
 
 			}
 			else if (input->wasKeyPressed(aie::INPUT_KEY_UP))
 			{
-				m_Selection = Exit;
-				m_gameState = Menu3;
-
+				// move on to the previous item
+				currentMenuItem = (menuItems + currentMenuItem - 1) % menuItems;
+				m_gameState = menu[currentMenuItem].state;
 			}
 			else if (input->wasKeyPressed(aie::INPUT_KEY_F3))
 			{
 				m_gameState = SquareUp2;
-
-			}
-			break;
-		}
-		case Menu2:
-		{
-
-			// Trying to make a menu
-			if (input->wasKeyPressed(aie::INPUT_KEY_DOWN))
-			{
-				m_Selection = Exit;
-				m_gameState = Menu3;
-
-			}
-			else if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
-			{
-				m_gameState = Instructions;
-
-			}
-			else if (input->wasKeyPressed(aie::INPUT_KEY_UP))
-			{
-				m_gameState = Menu1;
-				m_Selection = Play;
-
-			}
-			break;
-		}
-		case Menu3:
-		{
-
-			// Trying to make a menu
-			if (input->wasKeyPressed(aie::INPUT_KEY_DOWN))
-			{
-				m_Selection = Play;
-				m_gameState = Menu1;
-
-			}
-			else if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
-			{
-				m_gameState = Exit;
-
-			}
-			else if (input->wasKeyPressed(aie::INPUT_KEY_UP))
-			{
-				m_gameState = Menu2;
-				m_Selection = Instructions;
 
 			}
 			break;
@@ -476,6 +434,20 @@ void QuickDrawApp::update(float deltaTime) {
 		quit();
 }
 
+void QuickDrawApp::DrawBackground()
+{
+	switch (m_bgState)
+	{
+	case On:
+		m_2dRenderer->drawSprite(m_Building_Left, 400, 300, 0, 0, 0, 11);
+		m_2dRenderer->drawSprite(m_BG_Sunset, 400, 300, 0, 0, 0, 20);
+		break;
+	case Off:
+
+		break;
+	}
+}
+
 void QuickDrawApp::draw() {
 
 	// wipe the screen to the background colour
@@ -487,17 +459,7 @@ void QuickDrawApp::draw() {
 	m_2dRenderer->drawSprite(m_Border, 400, 300, 0, 0, 0,				2);
 	
 
-
-	switch (m_bgState)
-	{
-	case On:
-		m_2dRenderer->drawSprite(m_Building_Left, 400, 300, 0, 0, 0, 11);
-		m_2dRenderer->drawSprite(m_BG_Sunset, 400, 300, 0, 0, 0, 20);
-		break;
-	case Off:
-
-		break;
-	}
+	DrawBackground();
 
 	switch (m_flashState)
 	{
@@ -508,41 +470,32 @@ void QuickDrawApp::draw() {
 		break;
 	}
 
-	switch (m_Selection)
-	{
-	case Clear:
-		break;
-	case Play:
-		m_2dRenderer->drawSprite(m_Game_Menu_Selection, 200, 350, 0, 0, 0, 5);
-		break;
-	case Instructions:
-	
-		m_2dRenderer->drawSprite(m_Game_Menu_Selection, 200, 290, 0, 0, 0, 5);
-		break;
-	case Exit:
-		m_2dRenderer->drawSprite(m_Game_Menu_Selection, 200, 210, 0, 0, 0, 5);
-		break;
-	}
+	// draw the selection gun on the main menu
+	float gunYPosition = -1;
 
+	if (m_gameState >= Menu1 && m_gameState <= Menu3)
+		m_2dRenderer->drawSprite(m_Game_Menu_Selection, 200, menu[currentMenuItem].yPos, 0, 0, 0, 5);
+
+	// draw a message image saying "Ready"  or "Draw"
+	aie::Texture* message = nullptr;
 	switch (m_readyState)
 	{
-	case SquareUp:
-		m_2dRenderer->drawSprite(m_Game_SquareUp, 400, 300, 0, 0, 0, 5);
-		break;
-	case Ready:
-		m_2dRenderer->drawSprite(m_Game_Ready, 400, 300, 0, 0, 0, 5);
-		break;
-	case Clear:
-		break;
+	case SquareUp:	message = m_Game_SquareUp;	break;
+	case Ready: message = m_Game_Ready;	break;
 	}
+	if (message != nullptr)
+		m_2dRenderer->drawSprite(message, 400, 300, 0, 0, 0, 5);
 
 	//Titles
 	switch (m_gameState) {
 	case Menu1:
 	case Menu2:
 	case Menu3:
-		m_2dRenderer->drawSprite(m_Game_Menu, 400, 300, 0, 0, 0, 5);
-		
+		//m_2dRenderer->drawSprite(m_Game_Menu, 400, 300, 0, 0, 0, 5);
+		m_2dRenderer->setRenderColour(1, 1, 0, 1);
+		for (int i=0; i<3; i++)
+			m_2dRenderer->drawText(m_font_rope, menu[i].text.c_str(), 400, menu[i].yPos, 1);
+		m_2dRenderer->setRenderColour(1, 1, 1, 1);
 		break;
 
 	case Instructions:
@@ -620,8 +573,9 @@ void QuickDrawApp::draw() {
 	char fps[32];
 	sprintf_s(fps, 32, "FPS: %i", getFPS());
 	// output some text, uses the last used colour
-	m_2dRenderer->drawText(m_font, "Testing Consolas Font", 0, 0, 11);
-	m_2dRenderer->drawText(m_font_rope, "Testing Rope MF Font", 0, 0, 12);
+	//m_2dRenderer->setRenderColour(1, 1, 0, 1);
+	//m_2dRenderer->drawText(m_font, "Testing Consolas Font", 400, 400, 1);
+	
 	// done drawing sprites
 	m_2dRenderer->end();
 }

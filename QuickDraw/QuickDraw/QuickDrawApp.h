@@ -51,7 +51,7 @@ protected:
 	//Titles
 	aie::Texture*		m_Border;
 	aie::Texture*		m_Title;
-	aie::Texture*		m_Game_Menu;
+	//aie::Texture*		m_Game_Menu;
 	aie::Texture*		m_Instructions;
 	aie::Texture*		m_Flash;
 	aie::Texture*		m_Game_SquareUp;
@@ -138,4 +138,23 @@ protected:
 	//Hi-Score
 
 
+	void DrawBackground();
+
+	struct MenuItem 
+	{
+		string text;
+		float yPos;
+		GameState state; // this is the state we're in when we're showing this menu item
+		GameState nextState; // this is the state we go to when we press enter
+	};
+
+	const int menuItems = 3;
+
+	MenuItem menu[3] = {
+		{ "Play", 350, GameState::Menu1, GameState::SquareUp },
+		{ "Instructions", 280, GameState::Menu2, GameState::Instructions },
+		{ "Exit", 210, GameState::Menu3, GameState::Exit },
+	};
+
+	int currentMenuItem = 0;
 };
