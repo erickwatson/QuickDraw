@@ -139,6 +139,9 @@ protected:
 
 
 	void DrawBackground();
+	void FlashState();
+
+	//void ReadyState();
 
 	struct MenuItem 
 	{

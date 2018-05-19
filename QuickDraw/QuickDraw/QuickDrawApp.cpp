@@ -448,6 +448,29 @@ void QuickDrawApp::DrawBackground()
 	}
 }
 
+void QuickDrawApp::FlashState()
+{
+	switch (m_flashState)
+	{
+	case On:
+		m_2dRenderer->drawSprite(m_Flash, 400, 300, 0, 0, 0, 3);
+		break;
+	case Off:
+		break;
+	}	
+}
+
+/*void QuickDrawApp::ReadyState();
+{
+	switch (m_readyState)
+	{
+	case SquareUp:	message = m_Game_SquareUp;	break;
+	case Ready: message = m_Game_Ready;	break;
+	}
+	if (message != nullptr)
+		m_2dRenderer->drawSprite(message, 400, 300, 0, 0, 0, 5);
+}*/
+
 void QuickDrawApp::draw() {
 
 	// wipe the screen to the background colour
@@ -461,14 +484,8 @@ void QuickDrawApp::draw() {
 
 	DrawBackground();
 
-	switch (m_flashState)
-	{
-	case On:
-		m_2dRenderer->drawSprite(m_Flash, 400, 300, 0, 0, 0, 3);
-		break;
-	case Off:
-		break;
-	}
+	FlashState();
+
 
 	// draw the selection gun on the main menu
 	float gunYPosition = -1;
@@ -478,6 +495,9 @@ void QuickDrawApp::draw() {
 
 	// draw a message image saying "Ready"  or "Draw"
 	aie::Texture* message = nullptr;
+	
+	//ReadyState();
+
 	switch (m_readyState)
 	{
 	case SquareUp:	message = m_Game_SquareUp;	break;
