@@ -7,6 +7,8 @@
 #include <time.h>
 
 using namespace std;
+// draw a message image saying "Ready"  or "Draw"
+aie::Texture* message = nullptr;
 
 QuickDrawApp::QuickDrawApp() {
 
@@ -448,6 +450,8 @@ void QuickDrawApp::DrawBackground()
 	}
 }
 
+// Flash state
+// Turns on and off the white screenflash that simulates gunfire
 void QuickDrawApp::FlashState()
 {
 	switch (m_flashState)
@@ -460,60 +464,27 @@ void QuickDrawApp::FlashState()
 	}	
 }
 
-/*void QuickDrawApp::ReadyState();
+// Gun Position
+// Draw the selection gun on the main menu
+void QuickDrawApp::GunPosition()
 {
-	switch (m_readyState)
-	{
-	case SquareUp:	message = m_Game_SquareUp;	break;
-	case Ready: message = m_Game_Ready;	break;
-	}
-	if (message != nullptr)
-		m_2dRenderer->drawSprite(message, 400, 300, 0, 0, 0, 5);
-}*/
-
-void QuickDrawApp::draw() {
-
-	// wipe the screen to the background colour
-	clearScreen();
-
-	// begin drawing sprites
-	m_2dRenderer->begin();
-	m_2dRenderer->drawSprite(m_Title, 400, 300, 0, 0, 0,				1);
-	m_2dRenderer->drawSprite(m_Border, 400, 300, 0, 0, 0,				2);
-	
-
-	DrawBackground();
-
-	FlashState();
-
-
-	// draw the selection gun on the main menu
 	float gunYPosition = -1;
 
 	if (m_gameState >= Menu1 && m_gameState <= Menu3)
 		m_2dRenderer->drawSprite(m_Game_Menu_Selection, 200, menu[currentMenuItem].yPos, 0, 0, 0, 5);
+}
 
-	// draw a message image saying "Ready"  or "Draw"
-	aie::Texture* message = nullptr;
-	
-	//ReadyState();
-
-	switch (m_readyState)
-	{
-	case SquareUp:	message = m_Game_SquareUp;	break;
-	case Ready: message = m_Game_Ready;	break;
-	}
-	if (message != nullptr)
-		m_2dRenderer->drawSprite(message, 400, 300, 0, 0, 0, 5);
-
-	//Titles
+// Titles
+// Contains the different menu graphics and where they're rendered.
+void QuickDrawApp::TitleGraphics()
+{
 	switch (m_gameState) {
 	case Menu1:
 	case Menu2:
 	case Menu3:
 		//m_2dRenderer->drawSprite(m_Game_Menu, 400, 300, 0, 0, 0, 5);
 		m_2dRenderer->setRenderColour(1, 1, 0, 1);
-		for (int i=0; i<3; i++)
+		for (int i = 0; i < 3; i++)
 			m_2dRenderer->drawText(m_font_rope, menu[i].text.c_str(), 400, menu[i].yPos, 1);
 		m_2dRenderer->setRenderColour(1, 1, 1, 1);
 		break;
@@ -526,7 +497,7 @@ void QuickDrawApp::draw() {
 		m_2dRenderer->drawSprite(m_Game_Draw, 400, 300, 0, 0, 0, 5);
 		break;
 	case Win:
-		
+
 		m_2dRenderer->drawSprite(m_Game_Enter_Instruction, 400, 300, 0, 0, 0, 6);
 		m_2dRenderer->drawSprite(m_Game_Win, 400, 300, 0, 0, 0, 6);
 		break;
@@ -537,9 +508,27 @@ void QuickDrawApp::draw() {
 	case Exit:
 		break;
 	}
+}
 
+// Ready? Draw!
+// Draws the preparation messages before each round
+void QuickDrawApp::ReadyState()
+{
+	switch (m_readyState)
+	{
+	case SquareUp:	message = m_Game_SquareUp;	break;
+	case Ready: message = m_Game_Ready;	break;
+	}
+	if (message != nullptr)
+		m_2dRenderer->drawSprite(message, 400, 300, 0, 0, 0, 5);
+}
+
+// Player
+// Draws the state of the Player at different stages of the game
+void QuickDrawApp::PlayerState()
+{
 	//Player
-	
+
 	switch (m_playerState) {
 	case Null:
 		break;
@@ -558,10 +547,12 @@ void QuickDrawApp::draw() {
 		m_2dRenderer->drawSprite(m_Player_Gun, 400, 300, 0, 0, 0, 10);
 		break;
 	}
+}
 
-	//Extra
-	
-	
+// Enemy
+// Draws the state of the Enemy at different stages of the game
+void QuickDrawApp::EnemyState()
+{
 	//Enemy
 	switch (m_enemyState) {
 	case Null:
@@ -578,13 +569,39 @@ void QuickDrawApp::draw() {
 		m_2dRenderer->drawSprite(m_Enemy_Shadow_Hat, 400, 300, 0, 0, 0, 17);
 		m_2dRenderer->drawSprite(m_Enemy_Shadow, 400, 300, 0, 0, 0, 19);
 		break;
-	case Shooting:		
+	case Shooting:
 		m_2dRenderer->drawSprite(m_Enemy_Shadow_Hat, 400, 300, 0, 0, 0, 17);
 		m_2dRenderer->drawSprite(m_Enemy_Body_Draw, 400, 300, 0, 0, 0, 14);
 		m_2dRenderer->drawSprite(m_Enemy_Shadow_Draw, 400, 300, 0, 0, 0, 18);
 		break;
 
 	}
+}
+
+
+void QuickDrawApp::draw() {
+
+	// wipe the screen to the background colour
+	clearScreen();
+
+	// begin drawing sprites
+	m_2dRenderer->begin();
+	m_2dRenderer->drawSprite(m_Title, 400, 300, 0, 0, 0,				1);
+	m_2dRenderer->drawSprite(m_Border, 400, 300, 0, 0, 0,				2);
+
+	DrawBackground();
+
+	FlashState();
+
+	GunPosition();
+		
+	ReadyState();
+
+	TitleGraphics();
+
+	PlayerState();
+
+	EnemyState();
 
 	//Background
 	m_2dRenderer->drawSprite(m_BG_Dark, 400, 300, 0, 0, 0,					21);

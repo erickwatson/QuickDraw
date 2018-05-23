@@ -137,11 +137,17 @@ protected:
 
 	//Hi-Score
 
-
+	void TitleGraphics();
 	void DrawBackground();
 	void FlashState();
 
-	//void ReadyState();
+	void ReadyState();
+
+	void PlayerState();
+	void EnemyState();
+
+	void GunPosition();
+
 
 	struct MenuItem 
 	{
