@@ -18,6 +18,44 @@ QuickDrawApp::~QuickDrawApp() {
 
 }
 
+// Title Textures. Includes Ready states, Win/Lose states and Gun
+void QuickDrawApp::TitleTextures()
+{
+	m_Border = new aie::Texture("../images/Quickdraw_Border.png");
+	//m_Game_Menu = new aie::Texture("../images/Quickdraw_Game_Menu.png");
+	m_Instructions = new aie::Texture("../images/Quickdraw_Game_Instructions.png");
+	m_Title = new aie::Texture("../images/Quickdraw_Title.png");
+	m_Flash = new aie::Texture("../images/Quickdraw_Flash.png");
+	m_Game_SquareUp = new aie::Texture("../images/Quickdraw_Game_Square_Up.png");
+	m_Game_Ready = new aie::Texture("../images/Quickdraw_Game_Ready.png");
+	m_Game_Draw = new aie::Texture("../images/Quickdraw_Game_Draw.png");
+	m_Game_Win = new aie::Texture("../images/Quickdraw_Game_Win.png");
+	m_Game_Lose = new aie::Texture("../images/Quickdraw_Game_Lose.png");
+	m_Game_Enter_Instruction = new aie::Texture("../images/Quickdraw_Game_Enter_Instruction.png");
+	m_Game_Menu_Selection = new aie::Texture("../images/Quickdraw_Menu_Selection.png");
+}
+
+// Character Textures. Includes Player, Enemy and Hats
+void QuickDrawApp::CharacterTextures()
+{
+	// Player First State
+	m_Player_Gun = new aie::Texture("../images/Quickdraw_Player_Gun.png");
+	m_Player = new aie::Texture("../images/Quickdraw_Player.png");
+	m_Player_Hat = new aie::Texture("../images/Quickdraw_Player_Hat.png");
+	m_Player_Hat_Dead = new aie::Texture("../images/Quickdraw_Player_Hat_Dead.png");
+
+	// Enemy First State
+	m_Enemy_Body = new aie::Texture("../images/Quickdraw_Enemy_Body.png");
+	m_Enemy_Shadow = new aie::Texture("../images/Quickdraw_Enemy_Shadow.png");
+	m_Enemy_Shadow_Hat = new aie::Texture("../images/Quickdraw_Enemy_Shadow_Hat.png");
+
+	// Hats
+	m_Enemy_Hat = new aie::Texture("../images/Quickdraw_Enemy_Hat.png");
+	m_Enemy_Hat_Dead = new aie::Texture("../images/Quickdraw_Enemy_Hat_Dead.png");
+	m_Enemy_Shadow_Hat_Dead = new aie::Texture("../images/Quickdraw_Enemy_Shadow_Hat_Dead.png");
+}
+
+
 bool QuickDrawApp::startup() {
 	
 	m_2dRenderer = new aie::Renderer2D();
@@ -41,15 +79,8 @@ bool QuickDrawApp::startup() {
 	m_BG_Dark = new aie::Texture("../images/Quickdraw_BG_Dark.png");
 	m_BG_Sunset = new aie::Texture("../images/Quickdraw_BG_Sunset.png");
 
-	// Enemy First State
-	m_Enemy_Body = new aie::Texture("../images/Quickdraw_Enemy_Body.png");
-	m_Enemy_Shadow = new aie::Texture("../images/Quickdraw_Enemy_Shadow.png");
-	m_Enemy_Shadow_Hat = new aie::Texture("../images/Quickdraw_Enemy_Shadow_Hat.png");
-
-	// Hats
-	m_Enemy_Hat = new aie::Texture("../images/Quickdraw_Enemy_Hat.png");
-	m_Enemy_Hat_Dead = new aie::Texture("../images/Quickdraw_Enemy_Hat_Dead.png");
-	m_Enemy_Shadow_Hat_Dead = new aie::Texture("../images/Quickdraw_Enemy_Shadow_Hat_Dead.png");
+	// Characters
+	CharacterTextures();
 
 	// Draw
 	m_Enemy_Body_Draw = new aie::Texture("../images/Quickdraw_Enemy_Body_Draw.png");
@@ -57,26 +88,9 @@ bool QuickDrawApp::startup() {
 	
 	// Extra stuff
 	m_Building_Left = new aie::Texture("../images/Quickdraw_Building_Left.png");
-	m_Game_Menu_Selection = new aie::Texture("../images/Quickdraw_Menu_Selection.png");
-
-	// Player First State
-	m_Player_Gun = new aie::Texture("../images/Quickdraw_Player_Gun.png");
-	m_Player = new aie::Texture("../images/Quickdraw_Player.png");
-	m_Player_Hat = new aie::Texture("../images/Quickdraw_Player_Hat.png");
-	m_Player_Hat_Dead = new aie::Texture("../images/Quickdraw_Player_Hat_Dead.png");
-
-	//Titles
-	m_Border = new aie::Texture("../images/Quickdraw_Border.png");
-	//m_Game_Menu = new aie::Texture("../images/Quickdraw_Game_Menu.png");
-	m_Instructions = new aie::Texture("../images/Quickdraw_Game_Instructions.png");
-	m_Title = new aie::Texture("../images/Quickdraw_Title.png");
-	m_Flash = new aie::Texture("../images/Quickdraw_Flash.png");
-	m_Game_SquareUp = new aie::Texture("../images/Quickdraw_Game_Square_Up.png");
-	m_Game_Ready = new aie::Texture("../images/Quickdraw_Game_Ready.png");
-	m_Game_Draw = new aie::Texture("../images/Quickdraw_Game_Draw.png");
-	m_Game_Win = new aie::Texture("../images/Quickdraw_Game_Win.png");
-	m_Game_Lose = new aie::Texture("../images/Quickdraw_Game_Lose.png");
-	m_Game_Enter_Instruction = new aie::Texture("../images/Quickdraw_Game_Enter_Instruction.png");
+	
+	// Titles
+	TitleTextures();
 
 	// Load in sounds
 	//m_Sound_BG = new sound??("../sounds/Quickdraw_Sound_BG.wav");
@@ -98,7 +112,7 @@ void QuickDrawApp::update(float deltaTime) {
 
 	m_timer += deltaTime;
 	
-	// input example
+	// Input example
 	aie::Input* input = aie::Input::getInstance();
 	
 	switch (m_gameState)
