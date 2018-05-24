@@ -68,6 +68,11 @@ protected:
 	//sound::sound*		m_Sound_BG;
 	//sound::sound*		m_Sound_Gunshot_Player_Left;
 	//sound::sound*		m_Sound_Gunshot_Enemy_Right;
+
+
+	void TitleTextures();
+
+	void CharacterTextures();
 	
 	float m_cameraX, m_cameraY;
 	//float m_timer;
@@ -137,11 +142,14 @@ protected:
 
 	//Hi-Score
 
-
+	void TitleGraphics();
 	void DrawBackground();
 	void FlashState();
+	void ReadyState();
+	void PlayerState();
+	void EnemyState();
+	void GunPosition();
 
-	//void ReadyState();
 
 	struct MenuItem 
 	{
